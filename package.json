@@ -2,10 +2,19 @@
   "name": "discordbot",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "start": "bun index.ts",
+    "dev": "bun --watch index.ts"
+  },
   "devDependencies": {
+    "@biomejs/biome": "1.8.3",
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "moonlink.js": "^4.0.2"
   }
 }

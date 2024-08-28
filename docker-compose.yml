@@ -1,0 +1,17 @@
+services:
+  bot:
+    build: .
+  NodeLink:
+    image: performanc/nodelink:latest
+    container_name: NodeLink
+    volumes:
+      - ./src/config/nodelink.js:/usr/src/app/config.js
+    networks:
+      - NodeLink
+    expose:
+      - 2333
+    ports:
+      - "2333:2333"
+networks:
+  NodeLink:
+    name: NodeLink
