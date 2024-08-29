@@ -1,5 +1,5 @@
 import {REST, Routes} from 'discord.js';
-import type {CommandData} from '../commands';
+import type {Command} from '../commands';
 
 export class DiscordRestClient {
   private readonly rest: REST;
@@ -15,7 +15,7 @@ export class DiscordRestClient {
     this.rest = new REST({version: '10'}).setToken(this.token);
   }
 
-  public async updateCommands(commands: CommandData[]) {
+  public async updateCommands(commands: Command[]) {
     console.log('refreshing bot commands');
     return this.rest.put(Routes.applicationCommands(this.clientId), {
       body: commands,

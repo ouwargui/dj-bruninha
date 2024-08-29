@@ -1,33 +1,32 @@
-import type {ChatInputCommandInteraction} from 'discord.js';
+import type {
+  ChatInputCommandInteraction,
+  InteractionResponse,
+  SlashCommandBuilder,
+  SlashCommandOptionsOnlyBuilder,
+} from 'discord.js';
+import type {Client} from '../client/discord';
+import {ping} from './ping';
+import {play} from './play';
 
 export type CommandData = {
-  name: string;
-  description: string;
-  handler<T>(params: T extends ChatInputCommandInteraction ? T : never): void;
+  data: Command;
+  execute<T>(
+    client: Client,
+    params: T extends ChatInputCommandInteraction ? T : never,
+  ): Promise<InteractionResponse<boolean>>;
 };
 
-export type Command = {
-  [key: string]: CommandData;
-};
-
-const ping: CommandData = {
-  name: 'ping',
-  description: "Replies with pong if you're lucky :)",
-  handler: (interaction: ChatInputCommandInteraction) => {
-    return interaction.reply(
-      Math.random() < 0.5 ? 'Pong!' : 'vai te fude seu viado',
-    );
-  },
-};
+export type Command = SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
 
 export type AllCommandsWithData = {
-  commandDataList: CommandData[];
-  map: Command;
+  data: Command[];
+  map: Record<string, CommandData>;
 };
 
 export const commands: AllCommandsWithData = {
-  commandDataList: [ping],
+  data: [ping.data, play.data],
   map: {
     ping,
+    play,
   },
 };

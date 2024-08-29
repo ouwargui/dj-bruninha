@@ -1,14 +1,10 @@
-import {
-  Client as DiscordClient,
-  GatewayIntentBits,
-  type Interaction,
-} from 'discord.js';
+import {Client as DiscordClient, type Interaction} from 'discord.js';
 import type {AllCommandsWithData} from '../commands';
 import type {DiscordRestClient} from '../server/discord';
 import {Manager} from './moonlink';
 
 export class Client {
-  private readonly moonlink: Manager;
+  public readonly moonlink: Manager;
   private readonly discord: DiscordClient;
   private readonly commands: AllCommandsWithData;
   private readonly rest: DiscordRestClient;
@@ -17,11 +13,7 @@ export class Client {
     this.rest = rest;
     this.commands = commands;
     this.discord = new DiscordClient({
-      intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.GuildVoiceStates,
-      ],
+      intents: 641,
     });
     this.moonlink = new Manager((guildId, payload) => {
       this.discord.guilds.cache.get(guildId)?.shard?.send(JSON.parse(payload));
@@ -29,12 +21,13 @@ export class Client {
   }
 
   public async init() {
-    await this.rest.updateCommands(this.commands.commandDataList);
+    await this.rest.updateCommands(this.commands.data);
     this.setupListeners();
     await this.discord.login(process.env.DISCORD_TOKEN);
   }
 
   private setupListeners() {
+    this.discord.on('debug', (...args) => console.log(...args));
     this.discord.on('ready', () => this.onReady());
     this.discord.on('raw', (data) => this.onRaw(data));
     this.discord.on('interactionCreate', (interaction) =>
@@ -43,12 +36,7 @@ export class Client {
   }
 
   private onReady() {
-    if (!this.discord.user) {
-      console.error('User not found');
-      return;
-    }
-
-    this.moonlink.init(this.discord.user.id);
+    this.moonlink.start(this.discord);
   }
 
   private onRaw(data: unknown) {
@@ -59,7 +47,7 @@ export class Client {
     if (!interaction.isChatInputCommand()) return;
 
     const commandName = interaction.commandName;
-    const handler = this.commands.map[commandName].handler;
-    return handler(interaction);
+    const handler = this.commands.map[commandName].execute;
+    return handler(this, interaction);
   }
 }

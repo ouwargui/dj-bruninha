@@ -1,5 +1,7 @@
 services:
   bot:
+    networks:
+      - NodeLink
     build: .
   NodeLink:
     image: performanc/nodelink:latest
