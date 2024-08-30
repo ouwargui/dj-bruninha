@@ -1,10 +1,10 @@
 import {SlashCommandBuilder} from 'discord.js';
 import type {CommandData} from '.';
 
-export const stop: CommandData = {
+export const shuffle: CommandData = {
   data: new SlashCommandBuilder()
-    .setName('stop')
-    .setDescription('Clears the queue and leaves the voice channel.'),
+    .setName('shuffle')
+    .setDescription('Shuffles the queue'),
   execute: async (client, interaction) => {
     if (!interaction.inCachedGuild()) {
       return interaction.reply('This command can only be used in a server');
@@ -22,8 +22,8 @@ export const stop: CommandData = {
 
     if (!player.connected) return interaction.reply('Bot is not connected');
 
-    player.stop({destroy: true});
+    player.queue.shuffle();
 
-    return interaction.reply('Queue cleared and disconnected');
+    return interaction.reply('Queue shuffled');
   },
 };
