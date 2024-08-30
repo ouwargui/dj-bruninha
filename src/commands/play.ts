@@ -5,6 +5,7 @@ import {
 } from 'discord.js';
 import type {ISearchResult, Player, TLoadResultType} from 'moonlink.js';
 import type {CommandData} from '.';
+import type {Client} from '../client/discord';
 
 const searchMapper: {
   [key in TLoadResultType]?: (
@@ -25,6 +26,29 @@ const searchMapper: {
     );
   },
 };
+
+type PlayerCreationOptions = {
+  guildId: string;
+  textChannelId: string;
+  voiceChannelId: string;
+};
+
+function getPlayer(
+  client: Client,
+  {guildId, textChannelId, voiceChannelId}: PlayerCreationOptions,
+) {
+  const playerAlreadyExists = client.moonlink.getPlayer(guildId);
+  if (playerAlreadyExists) {
+    return playerAlreadyExists;
+  }
+
+  return client.moonlink.createPlayer({
+    guildId,
+    textChannelId,
+    voiceChannelId,
+    autoPlay: false,
+  });
+}
 
 export const play: CommandData = {
   data: new SlashCommandBuilder()
@@ -51,11 +75,10 @@ export const play: CommandData = {
       return interaction.reply('You must provide a song name bruh');
     }
 
-    const player = client.moonlink.createPlayer({
+    const player = getPlayer(client, {
       guildId: interaction.guild.id,
       textChannelId: interaction.channel.id,
       voiceChannelId: interaction.member.voice.channel.id,
-      autoPlay: true,
     });
 
     if (!player.connected) player.connect({setDeaf: true, setMute: false});
