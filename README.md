@@ -1,4 +1,8 @@
-# discordbot
+# dj-bruninha
+
+Discord bot that I made for my girlfriend, it can play music from youtube and soon will play from spotify as well.
+
+---
 
 To install dependencies:
 
