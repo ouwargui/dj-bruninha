@@ -22,7 +22,7 @@ const searchMapper: {
     }
 
     return interaction.reply(
-      `${res.playlistInfo.name} has been added to the queue`,
+      `${res?.playlistInfo?.name} has been added to the queue`,
     );
   },
 };
